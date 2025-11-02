@@ -7,9 +7,7 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-SECRET_KEY = os.getenv(
-    "SECRET_KEY", "django-insecure-change-this-in-production-!!!"
-)
+SECRET_KEY = os.getenv("SECRET_KEY", "x11d")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
@@ -122,9 +120,9 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS", "http://localhost:3000"
-).split(",")
+CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(
+    ","
+)
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -138,11 +136,8 @@ CHANNEL_LAYERS = {
 }
 
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/1")
-CELERY_RESULT_BACKEND = os.getenv(
-    "CELERY_RESULT_BACKEND", "redis://localhost:6379/1"
-)
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND", "redis://localhost:6379/1")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
-

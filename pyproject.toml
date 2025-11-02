@@ -13,11 +13,11 @@ dependencies = [
     "django-extensions>=3.2.0",
     "python-dotenv>=1.0.0",
     "pydantic>=2.12.3",
-    "psycopg2-binary>=2.9.9",
     "drf-spectacular>=0.27.0",
     "django-cors-headers>=4.3.0",
     "celery>=5.4.0",
     "redis>=5.0.0",
+    "pymongo>=4.15.3",
 ]
 
 [tool.ruff]
@@ -52,6 +52,8 @@ ignore = [
     "UP035",   # typing.List/Dict deprecated
     "UP007",   # Union[X, Y] vs X | Y
     "F401",    # unused imports
+    "F403",
+    "F405"
 ]
 
 [tool.ruff.lint.per-file-ignores]
