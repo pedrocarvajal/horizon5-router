@@ -1,0 +1,2 @@
+class BacktestRepository:
+    pass

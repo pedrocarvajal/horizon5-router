@@ -1,0 +1,2 @@
+class BacktestModel:
+    pass
