@@ -64,7 +64,14 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
-    }
+    },
+    "mongodb": {
+        "DB_NAME": os.getenv("MONGODB_DATABASE"),
+        "DB_USER": os.getenv("MONGODB_USERNAME"),
+        "DB_PASSWORD": os.getenv("MONGODB_PASSWORD"),
+        "DB_HOST": os.getenv("MONGODB_HOST"),
+        "DB_PORT": os.getenv("MONGODB_PORT", "27017"),
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -120,10 +127,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
 }
 
-CORS_ALLOWED_ORIGINS = os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(
-    ","
-)
-
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CHANNEL_LAYERS = {
