@@ -1,0 +1,32 @@
+services:
+  django:
+    build: .
+    container_name: horizon-django
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - DEBUG=${DEBUG:-True}
+      - DJANGO_SETTINGS_MODULE=config.settings.development
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    networks:
+      - horizon-network
+    depends_on:
+      - redis
+    command: python manage.py runserver 0.0.0.0:8000
+
+  redis:
+    image: redis:7-alpine
+    container_name: horizon-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - horizon-network
+
+networks:
+  horizon-network:
+    driver: bridge
