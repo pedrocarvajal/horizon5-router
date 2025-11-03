@@ -28,12 +28,14 @@ class BaseController(APIView):
         page_size_param = query_params.get("page_size", "10")
         sort_by_param = query_params.get("sort", "created_at")
         sort_direction_param = query_params.get("sort_order", "desc")
+        filter_by_param = query_params.get("filter_by", None)
 
         if not self._is_pagination_params_valid(
             page_param,
             page_size_param,
             sort_by_param,
             sort_direction_param,
+            filter_by_param,
         ):
             return self.response(
                 success=False,
@@ -45,6 +47,13 @@ class BaseController(APIView):
         page_size = int(page_size_param)  # type: ignore
         sort_by = str(sort_by_param)  # type: ignore
         sort_direction = str(sort_direction_param)  # type: ignore
+        query_filters = None
+
+        if filter_by_param:
+            parts = str(filter_by_param).split(":", 1)
+            column = parts[0].strip()
+            value = parts[1].strip()
+            query_filters = {column: {"$regex": value, "$options": "i"}}
 
         limit = int(page_size)
         offset = (page - 1) * limit
@@ -55,6 +64,7 @@ class BaseController(APIView):
                 offset=offset,
                 sort_by=sort_by,
                 sort_direction=sort_direction,
+                query_filters=query_filters,
             )
 
         except Exception as e:
@@ -65,7 +75,9 @@ class BaseController(APIView):
             )
 
         try:
-            total = self._model.count()
+            total = self._model.count(
+                query_filters=query_filters,
+            )
         except Exception as e:
             return self.response(
                 success=False,
@@ -120,6 +132,7 @@ class BaseController(APIView):
         page_size_param: Union[str, List[str], None],
         sort_by_param: Union[str, List[str], None],
         sort_direction_param: Union[str, List[str], None],
+        filter_by_param: Union[str, List[str], None] = None,
     ) -> bool:
         validator = Validator(
             {
@@ -142,6 +155,11 @@ class BaseController(APIView):
                     "type": "string",
                     "allowed": ["asc", "desc"],
                 },
+                "filter_by_param": {
+                    "type": "string",
+                    "regex": r"^[a-zA-Z_][a-zA-Z0-9_]*:.+$",
+                    "nullable": True,
+                },
             }  # type: ignore
         )
 
@@ -151,6 +169,7 @@ class BaseController(APIView):
                 "page_size_param": page_size_param,
                 "sort_by_param": sort_by_param,
                 "sort_direction_param": sort_direction_param,
+                "filter_by_param": filter_by_param,
             }
         )
 

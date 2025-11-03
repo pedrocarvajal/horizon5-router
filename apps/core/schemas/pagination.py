@@ -34,4 +34,11 @@ def pagination_schema() -> List[OpenApiParameter]:
             default="desc",
             enum=["asc", "desc"],
         ),
+        OpenApiParameter(
+            name="filter_by",
+            type=str,
+            location=OpenApiParameter.QUERY,
+            description="Filter by field (format: column:value)",
+            required=False,
+        ),
     ]
