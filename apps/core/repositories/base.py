@@ -54,3 +54,20 @@ class BaseRepository(RepositoryInterface):
         collection = self._db_service.get_collection(self._collection_name)
         filters = query_filters or {}
         return collection.count_documents(filters)
+
+    def store(
+        self,
+        data: Dict[str, Any],
+    ) -> str:
+        collection = self._db_service.get_collection(self._collection_name)
+        result = collection.insert_one(data)
+        return str(result.inserted_id)
+
+    def update(
+        self,
+        query_filters: Dict[str, Any],
+        data: Dict[str, Any],
+    ) -> int:
+        collection = self._db_service.get_collection(self._collection_name)
+        result = collection.update_one(query_filters, {"$set": data})
+        return result.modified_count

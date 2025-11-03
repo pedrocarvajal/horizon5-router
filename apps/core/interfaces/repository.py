@@ -24,3 +24,18 @@ class RepositoryInterface(ABC):
         query_filters: Optional[Dict[str, Any]] = None,
     ) -> int:
         pass
+
+    @abstractmethod
+    def store(
+        self,
+        data: Dict[str, Any],
+    ) -> str:
+        pass
+
+    @abstractmethod
+    def update(
+        self,
+        query_filters: Dict[str, Any],
+        data: Dict[str, Any],
+    ) -> int:
+        pass
