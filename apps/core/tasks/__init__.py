@@ -1,3 +1,3 @@
-from .process_backtests import process_backtests
+from .process_backtest import process_backtest
 
-__all__ = ["process_backtests"]
+__all__ = ["process_backtest"]

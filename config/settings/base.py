@@ -203,10 +203,5 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-        "celery": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
-            "propagate": False,
-        },
     },
 }

@@ -1,7 +1,11 @@
 import os
+from logging.config import dictConfig
+from typing import Any
 
 from celery import Celery
 from celery.schedules import crontab
+from celery.signals import setup_logging
+from django.conf import settings
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.development")
 
@@ -18,11 +22,17 @@ app.conf.update(
     broker_connection_retry_on_startup=True,
 )
 
+
+@setup_logging.connect
+def config_loggers(*args: Any, **kwargs: Any) -> None:  # noqa: ARG001
+    dictConfig(settings.LOGGING)
+
+
 app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
-    "process_backtests_schedule": {
-        "task": "apps.core.tasks.process_backtests",
+    "process_backtest_schedule": {
+        "task": "apps.core.tasks.process_backtest",
         "schedule": crontab(minute="*/1"),
     },
 }
