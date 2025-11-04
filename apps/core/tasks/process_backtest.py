@@ -5,7 +5,6 @@ from typing import Any, Dict, List, Optional, Tuple
 from bson import ObjectId
 from celery import shared_task
 
-from apps.core.enums.backtest_status import BacktestStatus
 from apps.core.enums.report_status import ReportStatus
 from apps.core.helpers.get_cagr_from import get_cagr_from
 from apps.core.helpers.get_calmar_ratio_from import get_calmar_ratio_from
@@ -17,7 +16,6 @@ from apps.core.helpers.get_recovery_factor_from import get_recovery_factor_from
 from apps.core.helpers.get_sharpe_ratio_from import get_sharpe_ratio_from_orders
 from apps.core.helpers.get_sortino_ratio_from import get_sortino_ratio_from
 from apps.core.helpers.get_ulcer_index_from import get_ulcer_index_from
-from apps.core.repositories.backtest import BacktestRepository
 from apps.core.repositories.order import OrderRepository
 from apps.core.repositories.report import ReportRepository
 from apps.core.repositories.report_performances import ReportPerformancesRepository
@@ -37,7 +35,6 @@ class ProcessBacktestTask:
     # CONSTRUCTOR
     # ───────────────────────────────────────────────────────────
     def __init__(self) -> None:
-        self._backtest_repository = BacktestRepository()
         self._report_repository = ReportRepository()
         self._report_returns_repository = ReportReturnsRepository()
         self._report_performances_repository = ReportPerformancesRepository()
@@ -181,35 +178,9 @@ class ProcessBacktestTask:
             cumulative_account_dates,
         )
 
-    def _get_pending_backtests(self) -> List[Dict[str, Any]]:
-        return self._backtest_repository.find(
-            query_filters={
-                "status": BacktestStatus.COMPLETED.value,
-            },
-        )
-
-    def _get_backtest_by_report_id(self, report_id: str) -> Optional[Dict[str, Any]]:
-        return self._backtest_repository.find(
-            query_filters={"report_id": report_id},
-        )[0]
-
-    def _get_pending_reports(self) -> List[Dict[str, Any]]:
-        return self._report_repository.find(
-            query_filters={
-                "status": ReportStatus.PENDING.value,
-            },
-        )
-
     def _get_report_by_backtest_id(self, backtest_id: str) -> Optional[Dict[str, Any]]:
         report = self._report_repository.find(
             query_filters={"backtest_id": backtest_id},
-        )
-
-        return report[0] if report else None
-
-    def _get_report_by_id(self, report_id: str) -> Optional[Dict[str, Any]]:
-        report = self._report_repository.find(
-            query_filters={"_id": ObjectId(report_id)},
         )
 
         return report[0] if report else None
@@ -232,11 +203,6 @@ class ProcessBacktestTask:
     def _update_report(self, report_id: str, data: Dict[str, Any]) -> None:
         self._report_repository.update(
             query_filters={"_id": ObjectId(report_id)},
-            data=data,
-        )
-
-    def _store_report(self, data: Dict[str, Any]) -> str:
-        return self._report_repository.store(
             data=data,
         )
 
