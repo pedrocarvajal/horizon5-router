@@ -1,6 +1,6 @@
 from typing import Any
 
-from drf_spectacular.utils import OpenApiExample, OpenApiParameter, inline_serializer
+from drf_spectacular.utils import OpenApiParameter, inline_serializer
 from rest_framework import serializers
 
 from apps.core.enums.backtest_status import BacktestStatus

@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Any, Dict, List, Optional
 
 from apps.core.interfaces.repository import RepositoryInterface
@@ -59,6 +60,10 @@ class BaseRepository(RepositoryInterface):
         self,
         data: Dict[str, Any],
     ) -> str:
+        now = datetime.now(tz=UTC)
+        data["created_at"] = now
+        data["updated_at"] = now
+
         collection = self._db_service.get_collection(self._collection_name)
         result = collection.insert_one(data)
         return str(result.inserted_id)
@@ -67,6 +72,12 @@ class BaseRepository(RepositoryInterface):
         self,
         data: List[Dict[str, Any]],
     ) -> List[str]:
+        now = datetime.now(tz=UTC)
+
+        for item in data:
+            item["created_at"] = now
+            item["updated_at"] = now
+
         collection = self._db_service.get_collection(self._collection_name)
         result = collection.insert_many(data)
         return [str(inserted_id) for inserted_id in result.inserted_ids]
@@ -76,6 +87,8 @@ class BaseRepository(RepositoryInterface):
         query_filters: Dict[str, Any],
         data: Dict[str, Any],
     ) -> int:
+        data["updated_at"] = datetime.now(tz=UTC)
+
         collection = self._db_service.get_collection(self._collection_name)
         result = collection.update_one(query_filters, {"$set": data})
         return result.modified_count
