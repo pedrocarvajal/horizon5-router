@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Any, Dict, List, Optional
 
 from apps.core.enums.report_status import ReportStatus
@@ -49,6 +50,8 @@ class BaseModel:
                 data={
                     "backtest_id": inserted_id,
                     "status": ReportStatus.PENDING.value,
+                    "created_at": datetime.now(tz=UTC),
+                    "updated_at": datetime.now(tz=UTC),
                 }
             )
 
@@ -59,4 +62,8 @@ class BaseModel:
         query_filters: Dict[str, Any],
         data: Dict[str, Any],
     ) -> int:
-        return self._repository.update(query_filters=query_filters, data=data)
+        data["updated_at"] = datetime.now(tz=UTC)
+        return self._repository.update(
+            query_filters=query_filters,
+            data=data,
+        )

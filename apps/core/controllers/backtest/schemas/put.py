@@ -3,6 +3,8 @@ from typing import Any
 from drf_spectacular.utils import OpenApiExample, OpenApiParameter, inline_serializer
 from rest_framework import serializers
 
+from apps.core.enums.backtest_status import BacktestStatus
+
 
 def update_schema() -> Any:
     return {
@@ -24,20 +26,8 @@ def update_schema() -> Any:
         "request": inline_serializer(
             name="BacktestUpdateRequest",
             fields={
-                "asset": serializers.CharField(
-                    required=False,
-                    default="{btcusdt}",
-                ),
-                "start_at": serializers.IntegerField(
-                    required=False,
-                    default="{timestamp}",
-                ),
-                "end_at": serializers.IntegerField(
-                    required=False,
-                    default="{timestamp}",
-                ),
                 "status": serializers.ChoiceField(
-                    choices=["pending", "running", "completed", "failed"],
+                    choices=[s.value for s in BacktestStatus],
                     required=False,
                     default="{running}",
                 ),

@@ -58,15 +58,21 @@ class BacktestController(BaseController):
 
         backtest_id = None
         asset = body.get("asset")
-        start_at = datetime.now(tz=UTC)
-        end_at = None
+
+        from_date = body.get("from_date", 0)
+        from_date = float(from_date if from_date is not None else 0)
+        from_date = datetime.fromtimestamp(from_date, tz=UTC)
+
+        to_date = body.get("to_date", 0)
+        to_date = float(to_date if to_date is not None else 0)
+        to_date = datetime.fromtimestamp(to_date, tz=UTC)
 
         try:
             backtest_id = self._model.store(
                 data={
                     "asset": asset,
-                    "start_at": start_at,
-                    "end_at": end_at,
+                    "from_date": from_date,
+                    "to_date": to_date,
                     "status": BacktestStatus.RUNNING.value,
                 }
             )
@@ -182,6 +188,16 @@ class BacktestController(BaseController):
                     "required": True,
                     "minlength": 1,
                 },
+                "from_date": {
+                    "type": "integer",
+                    "required": True,
+                    "coerce": int,
+                },
+                "to_date": {
+                    "type": "integer",
+                    "required": True,
+                    "coerce": int,
+                },
             }  # type: ignore
         )
 
@@ -190,26 +206,13 @@ class BacktestController(BaseController):
     def _is_update_data_valid(self, body: Dict[str, Any]) -> bool:
         validator = Validator(
             {
-                "asset": {
-                    "type": "string",
-                    "required": False,
-                    "minlength": 1,
-                },
-                "start_at": {
-                    "type": "integer",
-                    "required": False,
-                },
-                "end_at": {
-                    "type": "integer",
-                    "required": False,
-                    "nullable": True,
-                },
-                "status": {
+                "status": {  # type: ignore
                     "type": "string",
                     "required": False,
                     "allowed": [s.value for s in BacktestStatus],
                 },
-            }  # type: ignore
+            },
+            allow_unknown=True,
         )
 
         return validator.validate(body)  # type: ignore
