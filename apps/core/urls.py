@@ -28,8 +28,18 @@ urlpatterns = [
     ),
     path(
         "orders/",
-        OrderController.as_view(),
+        OrderController.as_view(http_method_names=["get"]),
         name="order.get",
+    ),
+    path(
+        "order/",
+        OrderController.as_view(http_method_names=["post"]),
+        name="order.post",
+    ),
+    path(
+        "order/<str:id>/",
+        OrderController.as_view(http_method_names=["put", "patch", "delete"]),
+        name="order.update",
     ),
     path(
         "reports/",
