@@ -60,9 +60,19 @@ class BaseRepository(RepositoryInterface):
         self,
         data: Dict[str, Any],
     ) -> str:
-        now = datetime.now(tz=UTC)
-        data["created_at"] = now
-        data["updated_at"] = now
+        if "created_at" in data and not isinstance(data["created_at"], datetime):
+            created_at = data["created_at"]
+            created_at = float(created_at if created_at is not None else 0)
+            data["created_at"] = datetime.fromtimestamp(created_at, tz=UTC)
+        elif "created_at" not in data:
+            data["created_at"] = datetime.now(tz=UTC)
+
+        if "updated_at" in data and not isinstance(data["updated_at"], datetime):
+            updated_at = data["updated_at"]
+            updated_at = float(updated_at if updated_at is not None else 0)
+            data["updated_at"] = datetime.fromtimestamp(updated_at, tz=UTC)
+        elif "updated_at" not in data:
+            data["updated_at"] = datetime.now(tz=UTC)
 
         collection = self._db_service.get_collection(self._collection_name)
         result = collection.insert_one(data)
@@ -75,8 +85,19 @@ class BaseRepository(RepositoryInterface):
         now = datetime.now(tz=UTC)
 
         for item in data:
-            item["created_at"] = now
-            item["updated_at"] = now
+            if "created_at" in item and not isinstance(item["created_at"], datetime):
+                created_at = item["created_at"]
+                created_at = float(created_at if created_at is not None else 0)
+                item["created_at"] = datetime.fromtimestamp(created_at, tz=UTC)
+            elif "created_at" not in item:
+                item["created_at"] = now
+
+            if "updated_at" in item and not isinstance(item["updated_at"], datetime):
+                updated_at = item["updated_at"]
+                updated_at = float(updated_at if updated_at is not None else 0)
+                item["updated_at"] = datetime.fromtimestamp(updated_at, tz=UTC)
+            elif "updated_at" not in item:
+                item["updated_at"] = now
 
         collection = self._db_service.get_collection(self._collection_name)
         result = collection.insert_many(data)
@@ -87,7 +108,12 @@ class BaseRepository(RepositoryInterface):
         query_filters: Dict[str, Any],
         data: Dict[str, Any],
     ) -> int:
-        data["updated_at"] = datetime.now(tz=UTC)
+        if "updated_at" in data and not isinstance(data["updated_at"], datetime):
+            updated_at = data["updated_at"]
+            updated_at = float(updated_at if updated_at is not None else 0)
+            data["updated_at"] = datetime.fromtimestamp(updated_at, tz=UTC)
+        elif "updated_at" not in data:
+            data["updated_at"] = datetime.now(tz=UTC)
 
         collection = self._db_service.get_collection(self._collection_name)
         result = collection.update_one(query_filters, {"$set": data})
