@@ -204,7 +204,6 @@ class SnapshotController(BaseController):
                     "required": False,
                     "nullable": True,
                     "coerce": float,
-                    "max": 0,
                 },
                 "max_drawdown": {
                     "type": "float",
